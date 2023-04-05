@@ -38,6 +38,19 @@ app.post('/tweets', (req, res) => {
 });
 
 app.get('/tweets', (req, res) => {
+  const page = parseInt(req.query.page) || 1; // Get the value of page from query string, default to 1
+  if (page < 1) {
+    return res.status(400).json({ error: 'Informe uma página válida!' });
+  }
+  const tweetsForPage = fetchTweetsFromDataSource(page)
+  const tweetsWithAvatar = tweetsForPage.map(tweet => {
+    const userAvatar = getAvatar(tweet.username)
+    return {username: tweet.username, avatar: userAvatar, tweet: tweet.tweet}
+  })
+  res.json(tweetsWithAvatar);
+});
+
+/* app.get('/tweets', (req, res) => {
   const lastTweets = fetchTweetsFromDataSource(tweets);
   console.log(lastTweets)
   const tweetsWithAvatar = lastTweets.map(tweet => {
@@ -46,7 +59,7 @@ app.get('/tweets', (req, res) => {
   })
   res.json(tweetsWithAvatar);
 });
-
+ */
 app.get('/tweets/:username', (req, res) => {
   const { username } = req.params;
   const userTweets = tweetsFromUser(username);
@@ -57,13 +70,20 @@ app.get('/tweets/:username', (req, res) => {
   res.json(tweetsWithAvatar);
 });
 
-function fetchTweetsFromDataSource(tweets) {
-  if (tweets.length >= 10)
-    return tweets.slice(-10);
-  if (tweets.length === 0)
-    return [];
-  return tweets;
-  }
+/* function fetchTweetsFromDataSource(page) {
+  const tweetsPerPage = 10;
+  if (page === 1)
+    return tweets.slice(-10)
+  const startIndex = (page - 1) * tweetsPerPage;
+  const endIndex = startIndex + tweetsPerPage;
+  return tweets.slice(-endIndex, -startIndex);
+} */
+function fetchTweetsFromDataSource(page) {
+  const tweetsPerPage = 10;
+  const startIndex = Math.max(tweets.length - (page * tweetsPerPage), 0);
+  const endIndex = Math.max(tweets.length - ((page - 1) * tweetsPerPage), 0);
+  return tweets.slice(startIndex, endIndex).reverse();
+}
 
   function getAvatar(username) {
     const userFind = connectedUsers.find(user => user.username === username);
