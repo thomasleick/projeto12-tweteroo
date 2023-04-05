@@ -12,6 +12,10 @@ app.post('/sign-up', (req, res) => {
   if (!username || !avatar) {
     return res.status(400).json({ error: 'username and avatar are required' });
   }
+  if (typeof username !== 'string' || typeof avatar !== 'string') {
+    return res.status(400).json({ error: 'username and avatar must be strings' });
+  }
+
   res.status(201).json({ message: "OK" });
   connectedUsers.push({username: username, avatar: avatar});
 });
@@ -21,6 +25,9 @@ app.post('/tweets', (req, res) => {
   
   if (!username || !tweet) {
     return res.status(400).json({ error: 'username and tweet are required' });
+  }
+  if (typeof username !== 'string' || typeof tweet !== 'string') {
+    return res.status(400).json({ error: 'username and avatar must be strings' });
   }
 
   if (!connectedUsers.some(user => user.username === username)) {
