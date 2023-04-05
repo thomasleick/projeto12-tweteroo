@@ -8,8 +8,7 @@ app.use(express.json());
 
 // ROTAS
 app.post('/sign-up', (req, res) => {
-  let username = req.body.username || req.header('user');
-  const avatar = req.body.avatar;
+  const { username, avatar } = req.body;
   if (!username || !avatar) {
     return res.status(400).json({ error: 'username and avatar are required' });
   }
@@ -22,7 +21,8 @@ app.post('/sign-up', (req, res) => {
 });
 
 app.post('/tweets', (req, res) => {
-  const { username, tweet } = req.body;
+  let username = req.body.username || req.header('user');
+  const { tweet } = req.body;
   
   if (!username || !tweet) {
     return res.status(400).json({ error: 'username and tweet are required' });
