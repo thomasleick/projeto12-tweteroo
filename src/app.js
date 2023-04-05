@@ -8,7 +8,8 @@ app.use(express.json());
 
 // ROTAS
 app.post('/sign-up', (req, res) => {
-  const { username, avatar } = req.body;
+  let username = req.body.username || req.header('user');
+  const avatar = req.body.avatar;
   if (!username || !avatar) {
     return res.status(400).json({ error: 'username and avatar are required' });
   }
@@ -50,16 +51,6 @@ app.get('/tweets', (req, res) => {
   res.json(tweetsWithAvatar);
 });
 
-/* app.get('/tweets', (req, res) => {
-  const lastTweets = fetchTweetsFromDataSource(tweets);
-  console.log(lastTweets)
-  const tweetsWithAvatar = lastTweets.map(tweet => {
-    const userAvatar = getAvatar(tweet.username)
-    return {username: tweet.username, avatar: userAvatar, tweet: tweet.tweet}
-  })
-  res.json(tweetsWithAvatar);
-});
- */
 app.get('/tweets/:username', (req, res) => {
   const { username } = req.params;
   const userTweets = tweetsFromUser(username);
@@ -70,14 +61,6 @@ app.get('/tweets/:username', (req, res) => {
   res.json(tweetsWithAvatar);
 });
 
-/* function fetchTweetsFromDataSource(page) {
-  const tweetsPerPage = 10;
-  if (page === 1)
-    return tweets.slice(-10)
-  const startIndex = (page - 1) * tweetsPerPage;
-  const endIndex = startIndex + tweetsPerPage;
-  return tweets.slice(-endIndex, -startIndex);
-} */
 function fetchTweetsFromDataSource(page) {
   const tweetsPerPage = 10;
   const startIndex = Math.max(tweets.length - (page * tweetsPerPage), 0);
