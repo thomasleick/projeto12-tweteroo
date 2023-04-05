@@ -15,7 +15,19 @@ app.post('/sign-up', (req, res) => {
   res.status(201).json({ message: "OK" });
   connectedUsers.push(username);
 });
+app.post('/tweets', (req, res) => {
+  const { username, tweet } = req.body;
+  
+  if (!username || !tweet) {
+    return res.status(400).json({ error: 'username and tweet are required' });
+  }
 
+  if (!connectedUsers.includes(username)) {
+    return res.status(401).json({ error: 'UNAUTHORIZED' });
+  }
+  res.status(201).json({ message: 'Tweet created successfully' });
+  tweets.push(tweet)
+});
 
 
 // Start
