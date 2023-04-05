@@ -26,9 +26,34 @@ app.post('/tweets', (req, res) => {
     return res.status(401).json({ error: 'UNAUTHORIZED' });
   }
   res.status(201).json({ message: 'Tweet created successfully' });
-  tweets.push(tweet)
+  tweets.push({username: username, tweet: tweet})
+});
+app.get('/tweets', (req, res) => {
+  const lastTweets = fetchTweetsFromDataSource(tweets);
+  console.log(lastTweets)
+  const tweetsWithAvatar = lastTweets.map(tweet => {
+    const userAvatar = getAvatar(tweet.username)
+    return {username: tweet.username, avatar: userAvatar, tweet: tweet.tweet}
+  })
+  res.json(tweetsWithAvatar);
 });
 
+function fetchTweetsFromDataSource(tweets) {
+  if (tweets.length >= 10)
+    return tweets.slice(-10);
+  if (tweets.length === 0)
+    return [];
+  return tweets;
+  }
+  function getAvatar(username) {
+    const userFind = connectedUsers.find(user => user.username === username);
+  
+    if (userFind) {
+      return userFind.avatar;
+    }
+  
+    return null;
+  }
 
 // Start
 const port = 5000;
