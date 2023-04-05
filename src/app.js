@@ -13,7 +13,7 @@ app.post('/sign-up', (req, res) => {
     return res.status(400).json({ error: 'username and avatar are required' });
   }
   res.status(201).json({ message: "OK" });
-  connectedUsers.push(username);
+  connectedUsers.push({username: username, avatar: avatar});
 });
 app.post('/tweets', (req, res) => {
   const { username, tweet } = req.body;
@@ -22,7 +22,7 @@ app.post('/tweets', (req, res) => {
     return res.status(400).json({ error: 'username and tweet are required' });
   }
 
-  if (!connectedUsers.includes(username)) {
+  if (!connectedUsers.some(user => user.username === username)) {
     return res.status(401).json({ error: 'UNAUTHORIZED' });
   }
   res.status(201).json({ message: 'Tweet created successfully' });
