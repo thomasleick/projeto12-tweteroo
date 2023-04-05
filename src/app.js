@@ -1,8 +1,8 @@
 const express = require('express');
 
 const app = express();
-let connectedUsers = [];
-let tweets = [];
+const connectedUsers = [];
+const tweets = [];
 
 app.use(express.json());
 
@@ -15,6 +15,7 @@ app.post('/sign-up', (req, res) => {
   res.status(201).json({ message: "OK" });
   connectedUsers.push({username: username, avatar: avatar});
 });
+
 app.post('/tweets', (req, res) => {
   const { username, tweet } = req.body;
   
@@ -28,10 +29,21 @@ app.post('/tweets', (req, res) => {
   res.status(201).json({ message: 'Tweet created successfully' });
   tweets.push({username: username, tweet: tweet})
 });
+
 app.get('/tweets', (req, res) => {
   const lastTweets = fetchTweetsFromDataSource(tweets);
   console.log(lastTweets)
   const tweetsWithAvatar = lastTweets.map(tweet => {
+    const userAvatar = getAvatar(tweet.username)
+    return {username: tweet.username, avatar: userAvatar, tweet: tweet.tweet}
+  })
+  res.json(tweetsWithAvatar);
+});
+
+app.get('/tweets/:username', (req, res) => {
+  const { username } = req.params;
+  const userTweets = tweetsFromUser(username);
+  const tweetsWithAvatar = userTweets.map(tweet => {
     const userAvatar = getAvatar(tweet.username)
     return {username: tweet.username, avatar: userAvatar, tweet: tweet.tweet}
   })
@@ -45,6 +57,7 @@ function fetchTweetsFromDataSource(tweets) {
     return [];
   return tweets;
   }
+
   function getAvatar(username) {
     const userFind = connectedUsers.find(user => user.username === username);
   
@@ -53,6 +66,11 @@ function fetchTweetsFromDataSource(tweets) {
     }
   
     return null;
+  }
+
+  function tweetsFromUser(username) {
+    const userTweets = tweets.filter(tweet => tweet.username === username);
+    return userTweets;
   }
 
 // Start
