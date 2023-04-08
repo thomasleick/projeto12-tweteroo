@@ -41,7 +41,7 @@ app.post('/tweets', (req, res) => {
 app.get('/tweets', (req, res) => {
   const page = parseInt(req.query.page) || 1; // Get the value of page from query string, default to 1
   if (page < 1) {
-    return res.status(400).json({ error: 'Informe uma página válida!' });
+    return res.status(400).json({ error: 'Please enter a valid page!' });
   }
   const tweetsForPage = fetchTweetsFromDataSource(page)
   const tweetsWithAvatar = tweetsForPage.map(tweet => {
